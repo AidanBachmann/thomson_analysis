@@ -5,6 +5,7 @@ from scipy.fft import fft2, ifft2, fftshift
 import matplotlib.pyplot as plt
 import cv2
 import pickle
+
 def split_image_into_horizontal_parts(image_path, num_parts=12):
     image = cv2.imread(image_path)
     height, width, _ = image.shape
