@@ -10,7 +10,7 @@ calibration_directory = './calibration/'
 im_directory = './calibration/'
 image_to_analyze ='airforce-test-strip-backlit-greenlaser.tif'
 im_directory = './1_19_2024_laser_spark/'
-image_to_analyze ='Sequence24(UBSi121HB2062).tif'
+image_to_analyze ='Sequence45(UBSi121HB2062).tif'
 path_to_image = im_directory+image_to_analyze
 save_directory = im_directory+image_to_analyze.split('/')[-1].split('.')[0]+'/'
 
@@ -27,6 +27,21 @@ ut.save_parts(directory=save_directory, image_parts=image_parts)
 # Initialize array for aligned images
 aligned_images = []
 
+# Compute the spatial mm/pixel
+ld = 218
+dl = 207 
+dpix = ld-dl
+
+group = 2
+element = 3
+
+lppmm = 2**(group+(element-1)/6)
+mmpll = 1/lppmm
+
+# Compute the spatial mm/pixel
+pixpmm = dpix*lppmm
+mmppix = 1/pixpmm
+
 # Load calibration offsets #
 try:
     with open(f'{calibration_directory}offsets.pkl', 'rb') as f:
@@ -42,22 +57,29 @@ try:
         # Adjust the saturation and constrast of image in a single line
         aligned_images.append(aligned_image)
 
-        import matplotlib.pyplot as plt
+        
+        fig = plt.figure(figsize=(10, 5))
 
         # Plot the image and lineout side by side
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
+        ax1 = plt.subplot(121)
+        ax2 = plt.subplot(122,sharey=ax1)
+        # Set size of figure 
+        # fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
 
         # Display the image
-        ax1.imshow(aligned_image, aspect="auto")
+        rowmax = aligned_image.shape[0]
+        colmax = aligned_image.shape[1]
+
+        # ax1.imshow(aligned_image, aspect="auto")
         title = "Aligned Image: "+str(i)
         ax1.set_title(title)
 
         # Plot the lineout
         n_avg = 10
-        pixel = 800
+        pixel = 700
         lineout = aligned_image[:, pixel-n_avg:pixel+n_avg].mean(axis=1)
         lineout = np.flip(lineout)
-
+        xlineout = np.arange(0, len(lineout), 1)
 
         # Compute the slope of the lineout
         slope = np.zeros_like(lineout)
@@ -67,12 +89,16 @@ try:
         # Find the indices of the most extreme inflection points
         extreme_inflection_points = np.where(np.abs(np.diff(np.sign(slope))) > 1)[0]
         ax3 = ax2.twinx()  # instantiate a second axes that shares the same x-axis
-        ax2.plot(lineout, range(lineout.size))
-        ax3.plot(slope, range(lineout.size), 'r-')
+        ax2.plot(lineout, mmppix*xlineout)
+        # ax3.plot(slope, range(lineout.size), 'r-')
 
         ax2.set_title('Lineout of Aligned Image')
-        ax2.set_ylim(0, aligned_image.shape[0])
-        ax3.set_ylim(0, aligned_image.shape[0])
+        ax2.set_ylim(0, mmppix*aligned_image.shape[0])
+        ax3.set_ylim(0, mmppix*aligned_image.shape[0])
+        aligned_image_marked = aligned_image.copy()
+        aligned_image_marked[:, pixel-n_avg:pixel+n_avg] = 0
+        ax1.imshow(aligned_image_marked, aspect="auto", extent=[0,mmppix*colmax,0,mmppix*rowmax])        
+
         # ax2.set_xlim(0, 255)
         plt.tight_layout()
         # plt.show()
