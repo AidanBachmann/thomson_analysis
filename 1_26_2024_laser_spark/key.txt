@@ -1,0 +1,36 @@
+1 - image of nothing
+
+26 - image of airforce grid (also took picture with phone camera through view finder) (IR atten)
+	- D = 350ns
+	- FR = 1000M
+	1- E = 20us
+43-45 - spark with some 1.5 ND filter for the last two and a polarizer at 90 degrees to laser (IR atten)
+	D = 350ns
+	FR = 1000M
+	E - 1ns
+46-48 - spark with some 1.5 ND filter and polarizer at 90 degrees (IR atten)
+	D = 350ns
+	FR = 500M
+	E = 1ns
+49,50,52 - spark with some 1.5 ND filter and polarizer at 90 degrees (no IR atten)
+	D = 350ns
+	FR = 500M
+	E = 1ns
+
+70 - spark with 1.5 ND filter and polarizer at 90d (IR atten)
+	D = 330ns
+	FR = 500M
+	E = 1ns	
+71 - spark with 1.5 ND filter and polarizer at 90d (IR atten)
+	D = 350ns
+	FR = 500M
+	E = 1ns	
+72 - spark with 1.5 ND filter and polarizer at 90d (no IR atten)
+	D = 350ns
+	FR = 500M
+	E = 1ns	
+73-75 - spark with 1.5 ND filter and polarizer at 90d (no IR atten)
+	D = 340ns
+	FR = 500M
+	E = 1ns	
+66 - shows where the thomson laser is in the frame (hitting card from one side)
