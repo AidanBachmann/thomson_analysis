@@ -2,14 +2,15 @@ from PIL import Image, ImageEnhance
 import numpy as np
 import os 
 import functions as ut
+import fit as fitting
 import pickle 
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 calibration_directory = './calibration/'
-im_directory = './calibration/'
-image_to_analyze ='airforce-test-strip-backlit-greenlaser.tif'
-im_directory = './1_26_2024_laser_spark/'
+#im_directory = './calibration/'
+#image_to_analyze ='airforce-test-strip-backlit-greenlaser.tif'
+im_directory = '../1_26_2024_laser_spark/'
 image_to_analyze ='Sequence48(UBSi121HB2062).tif'
 path_to_image = im_directory+image_to_analyze
 save_directory = im_directory+image_to_analyze.split('/')[-1].split('.')[0]+'/'
@@ -54,6 +55,9 @@ frame_time = np.arange(0, num_frames, 1)*dt
 # Initialize array for tracking width of plasma in time 
 plasma_width = np.zeros_like(frame_time)
 
+# Create array to store lineouts
+lineouts = np.empty([num_frames,2],dtype='object')
+
 # mmppix  = 1
 
 # Load calibration offsets #
@@ -94,6 +98,7 @@ try:
         lineout = aligned_image[:, pixel-n_avg:pixel+n_avg].mean(axis=1)
         lineout = np.flip(lineout)
         xlineout = np.arange(0, len(lineout), 1)
+        lineouts[i,0],lineouts[i,1] = xlineout,lineout #Store lineout in lineouts array
 
         # Compute the slope of the lineout
         slope = np.zeros_like(lineout)
@@ -163,3 +168,9 @@ aligned_images_pil[0].save(gif_path,
                            append_images=aligned_images_pil[1:],
                            duration=200,  # Duration for each frame in milliseconds
                            loop=0)
+
+fits = fitting.fitFrames(lineouts)
+#fitting.plotFits(lineouts,fits,True)
+widths = fitting.findWidths(fits,mmppix,num_frames)
+vn,vAvg = fitting.computeVelocity(widths,0.001,frame_time,num_frames)
+fitting.plotVn(vn,vAvg,frame_time)

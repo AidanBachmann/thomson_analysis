@@ -34,3 +34,25 @@ def plotFits(lineouts,fits,save=False):
     for i in np.linspace(0,num_frames-1,num_frames,dtype='int'):
         plotFit(fits[i],lineouts[i],i,save)
     plt.show()
+
+def findWidths(fits,mmppix,num_frames):
+    widths = np.zeros([num_frames])
+    for i in np.linspace(0,num_frames-1,num_frames,dtype='int'):
+        widths[i] = mmppix*fits[i,1][1]/2 #Save Gaussian width, rescale from mm to pixels 
+    return widths
+
+def computeVelocity(widths,units,frame_time,num_frames): #Since widths are in mm, arg "units" is a scaling constant letting the user set the spatial units of the velocity (i.e., for mm/s, use units = 1)
+    vAvg = ((widths[-1]-widths[0])/(frame_time[-1]-frame_time[0]))*units
+    vn = np.zeros([num_frames-1])
+    print(f'\n\nWidths: {widths}\n\n')
+    for i in np.linspace(1,num_frames-1,num_frames-1,dtype='int'):
+        vn[i-1] = ((widths[i]-widths[i-1])/(frame_time[i]-frame_time[i-1]))*units
+    return vn,vAvg
+
+def plotVn(vn,vAvg,frame_time,units='m/s'):
+    plt.plot(frame_time[1:],vn)
+    plt.xlabel('Frame Times (s)')
+    plt.ylabel(f'Velocities ({units})')
+    plt.title('Average Velocity of Shock Between Time Steps')
+    plt.text(1.25e-8,10000,f'Average Velocity: {round(vAvg,2)} ({units})')
+    plt.show()
