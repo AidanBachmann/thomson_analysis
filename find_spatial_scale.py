@@ -11,7 +11,7 @@ calibration_directory = './calibration/'
 #im_directory = './calibration/'
 #image_to_analyze ='airforce-test-strip-backlit-greenlaser.tif'
 im_directory = '../1_26_2024_laser_spark/'
-image_to_analyze ='Sequence48(UBSi121HB2062).tif'
+image_to_analyze ='Sequence70(UBSi121HB2062).tif'
 path_to_image = im_directory+image_to_analyze
 save_directory = im_directory+image_to_analyze.split('/')[-1].split('.')[0]+'/'
 
@@ -171,6 +171,8 @@ aligned_images_pil[0].save(gif_path,
 
 fits = fitting.fitFrames(lineouts)
 #fitting.plotFits(lineouts,fits,True)
-widths = fitting.findWidths(fits,mmppix,num_frames)
-vn,vAvg = fitting.computeVelocity(widths,0.001,frame_time,num_frames)
-fitting.plotVn(vn,vAvg,frame_time)
+widths = fitting.findWidths(fits,mmppix,num_frames,0.001)
+vn,vAvg = fitting.computeVelocity(widths,frame_time,num_frames)
+#fitting.plotVn(vn,vAvg,frame_time)
+#fitting.plotWidth(widths,frame_time,vAvg)
+fitting.plotCalculations(widths,vn,vAvg,frame_time)
